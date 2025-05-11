@@ -319,6 +319,7 @@ class RawEditorState extends EditorState
       onSelectAll: selectAllEnabled
           ? () => selectAll(SelectionChangedCause.toolbar)
           : null,
+      onLiveTextInput: null, // We don't support live text input
     );
   }
 
@@ -1531,6 +1532,11 @@ class RawEditorState extends EditorState
         Actions.invoke(primaryContext, intent);
       }
     }
+  }
+
+  @override
+  void insertContent(KeyboardInsertedContent content) {
+    // Default implementation - does nothing
   }
 }
 
