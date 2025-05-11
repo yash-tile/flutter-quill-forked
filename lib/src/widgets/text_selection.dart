@@ -9,6 +9,9 @@ import 'package:flutter/scheduler.dart';
 import '../models/documents/nodes/node.dart';
 import 'editor.dart';
 
+/// Signature for a callback that reports when a drag selection update has occurred.
+typedef TapDragUpdateCallback = void Function(TapDragUpdateDetails details);
+
 TextSelection localSelection(Node node, TextSelection selection, fromParent) {
   final base = fromParent ? node.offset : node.documentOffset;
   assert(base <= selection.end && selection.start <= base + node.length - 1);
@@ -713,7 +716,7 @@ class EditorTextSelectionGestureDetector extends StatefulWidget {
   /// The frequency of calls is throttled to avoid excessive text layout
   /// operations in text fields. The throttling is controlled by the constant
   /// [_kDragSelectionUpdateThrottle].
-  final DragSelectionUpdateCallback? onDragSelectionUpdate;
+  final TapDragUpdateCallback? onDragSelectionUpdate;
 
   /// Called when a mouse that was previously dragging is released.
   final GestureDragEndCallback? onDragSelectionEnd;
@@ -856,8 +859,15 @@ class _EditorTextSelectionGestureDetectorState
     assert(_lastDragStartDetails != null);
     assert(_lastDragUpdateDetails != null);
     if (widget.onDragSelectionUpdate != null) {
-      widget.onDragSelectionUpdate!(
-          _lastDragStartDetails!, _lastDragUpdateDetails!);
+      widget.onDragSelectionUpdate!(TapDragUpdateDetails(
+        globalPosition: _lastDragUpdateDetails!.globalPosition,
+        localPosition: _lastDragUpdateDetails!.localPosition,
+        offsetFromOrigin: _lastDragUpdateDetails!.delta,
+        delta: _lastDragUpdateDetails!.delta,
+        localOffsetFromOrigin: _lastDragUpdateDetails!.localPosition,
+        consecutiveTapCount: 1,
+        keysPressedOnDown: const {},
+      ));
     }
     _dragUpdateThrottleTimer = null;
     _lastDragUpdateDetails = null;
