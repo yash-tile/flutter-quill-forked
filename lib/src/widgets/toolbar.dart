@@ -26,6 +26,7 @@ import 'toolbar/toggle_style_button.dart';
 
 export 'toolbar/clear_format_button.dart';
 export 'toolbar/color_button.dart';
+export 'toolbar/custom_alignment_btngroup.dart';
 export 'toolbar/history_button.dart';
 export 'toolbar/indent_button.dart';
 export 'toolbar/link_style_button.dart';

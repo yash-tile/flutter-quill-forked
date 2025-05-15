@@ -107,6 +107,13 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
                             icon: Icons.format_bold,
                             controller: _controller,
                             iconTheme: iconTheme,
+                          ),
+                          CustomAlignmentButtonGroup(
+                            controller: _controller,
+                            iconSize: 18,
+                            selectedIconColor: Colors.black,
+                            unselectedIconColor: Colors.black,
+                            selectedBackgroundColor: Colors.orange[200],
                           )
                         ],
                       )
