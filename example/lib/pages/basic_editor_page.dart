@@ -40,6 +40,13 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final QuillIconTheme iconTheme = QuillIconTheme(
+      iconSelectedFillColor: Colors.orange[200],
+      iconSelectedColor: Colors.black,
+      iconUnselectedFillColor: Colors.transparent,
+      iconUnselectedColor: Colors.black,
+      borderRadius: 10,
+    );
     // Calculate approximate line count (simple calculation for demo purposes)
     final text = _controller.document.toPlainText();
     final approxLineCount = text.isEmpty
@@ -65,12 +72,9 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(32.0),
         child: Center(
           child: Container(
-            constraints: BoxConstraints(
-              maxWidth: 600,
-            ),
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
               borderRadius: BorderRadius.circular(12),
@@ -85,42 +89,28 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Toolbar at the top
-                Card(
-                  elevation: 0,
-                  margin: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: QuillToolbar.basic(
-                      controller: _controller,
-                      showDividers: false,
-                      multiRowsDisplay: false,
-                      showFontFamily: false,
-                      showFontSize: false,
-                      showHeaderStyle: false,
-                      showListCheck: false,
-                      showCodeBlock: false,
-                      showInlineCode: false,
-                      showSearchButton: false,
-                      showColorButton: false,
-                      showBackgroundColorButton: false,
-                      showIndent: false,
-                      showListBullets: false,
-                      showListNumbers: false,
-                      showQuote: false,
-                      showClearFormat: false,
-                      showLink: false,
-                      showUndo: false,
-                      showRedo: false,
-                      showDirection: false,
-                      showStrikeThrough: false,
-                    ),
+                // Toolbar
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          ColorButton(
+                            icon: Icons.text_format,
+                            controller: _controller,
+                            background: false,
+                            iconTheme: iconTheme,
+                          ),
+                          ToggleStyleButton(
+                            attribute: Attribute.bold,
+                            icon: Icons.format_bold,
+                            controller: _controller,
+                            iconTheme: iconTheme,
+                          )
+                        ],
+                      )
+                    ],
                   ),
                 ),
                 // Divider between toolbar and editor
@@ -167,4 +157,53 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
       ),
     );
   }
+}
+
+///Text field with suffix icon
+Widget textFieldBoxWithSuffix(
+    context,
+    Function() onTap,
+    FocusNode focusNode,
+    TextEditingController controller,
+    String label,
+    TextInputType keyboardType,
+    bool error,
+    String errorMessage,
+    void Function(String)? onChanged,
+    String suffixIconPath,
+    VoidCallback? suffixIconOnPressed,
+    {bool enableInteractiveSelection = true}) {
+  return TextField(
+    scrollPadding: const EdgeInsets.only(bottom: 40),
+    keyboardType: keyboardType,
+    autocorrect: false,
+    enableSuggestions: false,
+    onTap: onTap,
+    onChanged: onChanged,
+    focusNode: focusNode,
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+      suffixIcon: Container(
+        margin: const EdgeInsets.only(right: 8),
+        child: IconButton(
+          splashRadius: 20,
+          onPressed: suffixIconOnPressed,
+          icon: const Icon(Icons.person),
+        ),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      errorStyle: const TextStyle(color: Colors.red),
+      errorText: error ? errorMessage : null,
+      labelText: label,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      labelStyle: const TextStyle(fontSize: 13, color: Colors.black),
+    ),
+    controller: controller,
+    enableInteractiveSelection: enableInteractiveSelection,
+  );
 }
