@@ -15,6 +15,9 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
     this.unselectedBackgroundColor,
     this.borderRadius = 2.0,
     this.afterButtonPressed,
+    this.leftAlignmentIcon,
+    this.centerAlignmentIcon,
+    this.rightAlignmentIcon,
     Key? key,
   }) : super(key: key);
 
@@ -41,6 +44,12 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
 
   /// Callback executed after a button is pressed.
   final VoidCallback? afterButtonPressed;
+
+  final IconData? leftAlignmentIcon;
+
+  final IconData? centerAlignmentIcon;
+
+  final IconData? rightAlignmentIcon;
 
   @override
   _CustomAlignmentButtonGroupState createState() =>
@@ -101,17 +110,23 @@ class _CustomAlignmentButtonGroupState
 
     // List of alignment attributes and their corresponding icons
     final alignments = [
-      {'attribute': Attribute.leftAlignment, 'icon': Icons.format_align_left},
+      {
+        'attribute': Attribute.leftAlignment,
+        'icon': widget.leftAlignmentIcon ?? Icons.format_align_left
+      },
       {
         'attribute': Attribute.centerAlignment,
-        'icon': Icons.format_align_center
+        'icon': widget.centerAlignmentIcon ?? Icons.format_align_center
       },
-      {'attribute': Attribute.rightAlignment, 'icon': Icons.format_align_right},
+      {
+        'attribute': Attribute.rightAlignment,
+        'icon': widget.rightAlignmentIcon ?? Icons.format_align_right
+      },
     ];
 
     return Expanded(
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: List.generate(
           alignments.length,
           (index) {

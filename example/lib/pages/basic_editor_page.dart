@@ -171,21 +171,16 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
                   children: [
                     // Toolbar
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
                       child: Column(
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               ColorButton(
                                 icon: Icons.text_format,
                                 controller: _controller,
                                 background: false,
-                                iconTheme: iconTheme,
-                              ),
-                              ToggleStyleButton(
-                                attribute: Attribute.bold,
-                                icon: Icons.format_bold,
-                                controller: _controller,
                                 iconTheme: iconTheme,
                               ),
                               CustomAlignmentButtonGroup(
@@ -194,7 +189,13 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
                                 selectedIconColor: Colors.black,
                                 unselectedIconColor: Colors.black,
                                 selectedBackgroundColor: Colors.orange[200],
-                              )
+                              ),
+                              ToggleStyleButton(
+                                attribute: Attribute.bold,
+                                icon: Icons.format_bold,
+                                controller: _controller,
+                                iconTheme: iconTheme,
+                              ),
                             ],
                           )
                         ],
