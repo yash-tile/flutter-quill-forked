@@ -35,6 +35,8 @@ dependencies:
     path: ../
   flutter_quill_extensions:
     path: ../flutter_quill_extensions
+  flutter_quill_delta_from_html: ^1.5.0
+  vsc_quill_delta_to_html: ^1.0.5
 
 dependency_overrides:
   flutter_quill:

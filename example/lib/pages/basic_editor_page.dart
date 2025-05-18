@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:tuple/tuple.dart';
+import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
+import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
 
 class BasicEditorPage extends StatefulWidget {
   const BasicEditorPage({Key? key}) : super(key: key);
@@ -17,10 +19,28 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
   // Line height for calculation (approximate height of a line of text)
   final double _lineHeight = 24.0;
 
+  // HTML content to convert to Delta
+  final String _testHtmlContent = '''
+<div>
+<strong>sdfasf<br></strong><em>sdfasdf<br></em><em><del>sdfasfd<br></del></em><em style="text-decoration:underline;">fdsafaf</em>
+</div><h1><em>sdfsdaf</em></h1><ul>
+<li>sdfaf</li>
+<li>dsfa</li>
+</ul><ol>
+<li>dsafsf</li>
+<li>dsaf</li>
+</ol><div>sdfadfa</div>
+''';
+
   @override
   void initState() {
     super.initState();
+
+    // Initialize with empty document
     _controller = QuillController.basic();
+
+    // Convert HTML to Delta and set it in the controller
+    _loadHtmlContent();
 
     // Listen for changes to add a new line when reaching the end
     _controller.document.changes.listen((event) {
@@ -28,6 +48,63 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
         // This will trigger a rebuild when content changes
       });
     });
+  }
+
+  // Method to convert HTML to Delta and load it into the editor
+  void _loadHtmlContent() {
+    try {
+      // Create an instance of HtmlToDelta
+      final converter = HtmlToDelta();
+      // Convert HTML to Delta
+      final delta = converter.convert(_testHtmlContent);
+      // The delta returned from HtmlToDelta is compatible with dart_quill_delta
+      // We need to convert it to a format that flutter_quill can use
+      final document = Document.fromJson(delta.toJson());
+      // Create a new QuillController with the document
+      _controller = QuillController(
+          document: document,
+          selection: const TextSelection.collapsed(offset: 0));
+      setState(() {});
+    } catch (e) {
+      print('Error converting HTML to Delta: $e');
+    }
+  }
+
+  // Method to convert Delta to HTML
+  void _convertDeltaToHtml() {
+    try {
+      // Get the Delta from the controller
+      final delta = _controller.document.toDelta();
+
+      // Create a converter instance
+      final converter = QuillDeltaToHtmlConverter(
+        delta.toJson().cast<Map<String, dynamic>>(),
+        ConverterOptions.forEmail(),
+      );
+
+      // Convert the Delta to HTML
+      final html = converter.convert();
+
+      // Print HTML to console for copying
+      print('CONVERTED HTML:');
+      print(html);
+
+      // Show a snackbar to inform user where to find the HTML
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('HTML output printed to console/terminal'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      print('Error converting Delta to HTML: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -74,91 +151,111 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
       body: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Center(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Toolbar
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Column(
-                    children: [
-                      Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Toolbar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
                         children: [
-                          ColorButton(
-                            icon: Icons.text_format,
-                            controller: _controller,
-                            background: false,
-                            iconTheme: iconTheme,
-                          ),
-                          ToggleStyleButton(
-                            attribute: Attribute.bold,
-                            icon: Icons.format_bold,
-                            controller: _controller,
-                            iconTheme: iconTheme,
-                          ),
-                          CustomAlignmentButtonGroup(
-                            controller: _controller,
-                            iconSize: 18,
-                            selectedIconColor: Colors.black,
-                            unselectedIconColor: Colors.black,
-                            selectedBackgroundColor: Colors.orange[200],
+                          Row(
+                            children: [
+                              ColorButton(
+                                icon: Icons.text_format,
+                                controller: _controller,
+                                background: false,
+                                iconTheme: iconTheme,
+                              ),
+                              ToggleStyleButton(
+                                attribute: Attribute.bold,
+                                icon: Icons.format_bold,
+                                controller: _controller,
+                                iconTheme: iconTheme,
+                              ),
+                              CustomAlignmentButtonGroup(
+                                controller: _controller,
+                                iconSize: 18,
+                                selectedIconColor: Colors.black,
+                                unselectedIconColor: Colors.black,
+                                selectedBackgroundColor: Colors.orange[200],
+                              )
+                            ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                ),
-                // Divider between toolbar and editor
-                const Divider(height: 1, thickness: 1),
-                // Editor with fixed height based on content
-                Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
-                    color: Colors.white,
-                  ),
-                  height: editorHeight,
-                  padding: const EdgeInsets.all(8),
-                  child: QuillEditor(
-                    controller: _controller,
-                    scrollController: _scrollController,
-                    scrollable: true,
-                    focusNode: _focusNode,
-                    autoFocus: false,
-                    readOnly: false,
-                    placeholder: 'Type your message...',
-                    expands: false,
-                    padding: EdgeInsets.zero,
-                    customStyles: DefaultStyles(
-                      paragraph: DefaultTextBlockStyle(
-                        const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
-                        const Tuple2(0, 0),
-                        const Tuple2(0, 0),
-                        null,
                       ),
                     ),
+                    // Divider between toolbar and editor
+                    const Divider(height: 1, thickness: 1),
+                    // Editor with fixed height based on content
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                        color: Colors.white,
+                      ),
+                      height: 400,
+                      padding: const EdgeInsets.all(8),
+                      child: QuillEditor(
+                        controller: _controller,
+                        scrollController: _scrollController,
+                        scrollable: true,
+                        focusNode: _focusNode,
+                        autoFocus: false,
+                        readOnly: false,
+                        placeholder: 'Type your message...',
+                        expands: false,
+                        padding: EdgeInsets.zero,
+                        customStyles: DefaultStyles(
+                          paragraph: DefaultTextBlockStyle(
+                            const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              height: 1.3,
+                            ),
+                            const Tuple2(0, 0),
+                            const Tuple2(0, 0),
+                            null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Submit button to convert Delta to HTML
+              ElevatedButton(
+                onPressed: _convertDeltaToHtml,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange[200],
+                  foregroundColor: Colors.black,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-              ],
-            ),
+                child: const Text('Convert to HTML'),
+              ),
+            ],
           ),
         ),
       ),
