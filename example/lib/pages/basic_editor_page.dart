@@ -3,6 +3,7 @@ import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:tuple/tuple.dart';
 import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:vsc_quill_delta_to_html/vsc_quill_delta_to_html.dart';
+import 'package:flutter_quill/src/utils/font.dart';
 
 class BasicEditorPage extends StatefulWidget {
   const BasicEditorPage({Key? key}) : super(key: key);
@@ -117,13 +118,25 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    final QuillIconTheme iconTheme = QuillIconTheme(
-      iconSelectedFillColor: Colors.orange[200],
+    const double toolOptionPadding = 8.0;
+    const double toolOptionIconSize = 16.0;
+    const double verticalDividerWidth = 14.0;
+
+    QuillIconTheme iconTheme = QuillIconTheme(
       iconSelectedColor: Colors.black,
-      iconUnselectedFillColor: Colors.transparent,
       iconUnselectedColor: Colors.black,
+      iconSelectedFillColor: Colors.orange[200],
+      iconUnselectedFillColor: Colors.transparent,
       borderRadius: 10,
     );
+
+    final fontSizes = {
+      '10': '10',
+      '12': '12',
+      '14': '14',
+      '16': '16',
+      '18': '18',
+    };
     // Calculate approximate line count (simple calculation for demo purposes)
     final text = _controller.document.toPlainText();
     final approxLineCount = text.isEmpty
@@ -170,34 +183,252 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Toolbar
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: Colors.grey.shade200,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       child: Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ColorButton(
-                                icon: Icons.text_format,
-                                controller: _controller,
-                                background: false,
-                                iconTheme: iconTheme,
-                              ),
-                              CustomAlignmentButtonGroup(
-                                controller: _controller,
-                                iconSize: 18,
-                                selectedIconColor: Colors.black,
-                                unselectedIconColor: Colors.black,
-                                selectedBackgroundColor: Colors.orange[200],
-                              ),
-                              ToggleStyleButton(
-                                attribute: Attribute.bold,
-                                icon: Icons.format_bold,
-                                controller: _controller,
-                                iconTheme: iconTheme,
-                              ),
-                            ],
-                          )
+                          // first row of toolbox
+                          IntrinsicHeight(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                // basic text editing buttons
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ColorButton(
+                                    icon: Icons.format_color_text,
+                                    controller: _controller,
+                                    background: false,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ColorButton(
+                                    icon: Icons.format_color_fill,
+                                    controller: _controller,
+                                    background: true,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.bold,
+                                    icon: Icons.format_bold,
+                                    controller: _controller,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.italic,
+                                    icon: Icons.format_italic,
+                                    controller: _controller,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.underline,
+                                    icon: Icons.format_underline,
+                                    controller: _controller,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.strikeThrough,
+                                    icon: Icons.format_strikethrough,
+                                    controller: _controller,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+
+                                VerticalDivider(
+                                  width: verticalDividerWidth,
+                                  thickness: 1,
+                                  color: Colors.grey.shade200,
+                                ),
+
+                                // undo and redo buttons
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: HistoryButton(
+                                    icon: Icons.undo_outlined,
+                                    controller: _controller,
+                                    undo: true,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: toolOptionPadding),
+                                  child: HistoryButton(
+                                    icon: Icons.redo_outlined,
+                                    controller: _controller,
+                                    undo: false,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Divider(
+                            height: 0,
+                            thickness: 1,
+                            color: Colors.grey.shade200,
+                          ),
+                          // second row of toolbox
+                          IntrinsicHeight(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: toolOptionPadding),
+                                  child: QuillFontSizeButton(
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                    attribute: Attribute.size,
+                                    controller: _controller,
+                                    items: [
+                                      for (MapEntry<String, String> fontSize
+                                          in fontSizes.entries)
+                                        PopupMenuItem<String>(
+                                          key: ValueKey(fontSize.key),
+                                          value: fontSize.value,
+                                          child: Text(fontSize.key.toString(),
+                                              style: TextStyle(
+                                                  color: fontSize.value == '0'
+                                                      ? Colors.red
+                                                      : null)),
+                                        ),
+                                    ],
+                                    onSelected: (newSize) {
+                                      _controller.formatSelection(
+                                          Attribute.fromKeyValue(
+                                              'size',
+                                              newSize == '0'
+                                                  ? null
+                                                  : getFontSize(newSize)));
+                                    },
+                                    rawItemsMap: fontSizes,
+                                  ),
+                                ),
+                                VerticalDivider(
+                                  width: 0,
+                                  thickness: 1,
+                                  color: Colors.grey.shade200,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: toolOptionPadding),
+                                  child: CustomAlignmentButtonGroup(
+                                    controller: _controller,
+                                    unselectedIconColor:
+                                        iconTheme.iconUnselectedColor,
+                                    selectedIconColor:
+                                        iconTheme.iconSelectedColor,
+                                    unselectedBackgroundColor:
+                                        iconTheme.iconUnselectedFillColor,
+                                    selectedBackgroundColor:
+                                        iconTheme.iconSelectedFillColor,
+                                    borderRadius: iconTheme.borderRadius ?? 2,
+                                    leftAlignmentIcon: Icons.format_align_left,
+                                    centerAlignmentIcon:
+                                        Icons.format_align_center,
+                                    rightAlignmentIcon:
+                                        Icons.format_align_right,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                VerticalDivider(
+                                  width: 0,
+                                  thickness: 1,
+                                  color: Colors.grey.shade200,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.ol,
+                                    controller: _controller,
+                                    icon: Icons.format_list_numbered,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: toolOptionPadding),
+                                  child: ToggleStyleButton(
+                                    attribute: Attribute.ul,
+                                    controller: _controller,
+                                    icon: Icons.format_list_bulleted,
+                                    iconTheme: iconTheme,
+                                    iconSize: toolOptionIconSize,
+                                  ),
+                                ),
+                                // VerticalDivider(
+                                //   width: verticalDividerWidth,
+                                //   thickness: 1,
+                                //   color: customColorScheme.border_07,
+                                // ),
+                                // // insert link button
+                                // Padding(
+                                //   padding: const EdgeInsets.only(top: toolOptionPadding),
+                                //   child: quill.LinkStyleButton(
+                                //     controller: widget.controller,
+                                //     icon: Icons.link,
+                                //     iconTheme: iconTheme,
+                                //     iconSize: toolOptionIconSize,
+                                //     // dialogTheme: dialogTheme,
+                                //   ),
+                                // ),
+
+                                // // indent and outdent buttons
+                                // quill.IndentButton(
+                                //   icon: Icons.format_indent_increase,
+                                //   controller: widget.controller,
+                                //   isIncrease: true,
+                                //   iconTheme: iconTheme,
+                                // ),
+                                // quill.IndentButton(
+                                //   icon: Icons.format_indent_decrease,
+                                //   controller: widget.controller,
+                                //   isIncrease: false,
+                                //   iconTheme: iconTheme,
+                                // ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
