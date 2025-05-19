@@ -18,6 +18,7 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
     this.leftAlignmentIcon,
     this.centerAlignmentIcon,
     this.rightAlignmentIcon,
+    this.rowAlignment = MainAxisAlignment.spaceEvenly,
     Key? key,
   }) : super(key: key);
 
@@ -50,6 +51,8 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
   final IconData? centerAlignmentIcon;
 
   final IconData? rightAlignmentIcon;
+
+  final MainAxisAlignment rowAlignment;
 
   @override
   _CustomAlignmentButtonGroupState createState() =>
@@ -126,7 +129,7 @@ class _CustomAlignmentButtonGroupState
 
     return Expanded(
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: widget.rowAlignment,
         children: List.generate(
           alignments.length,
           (index) {
