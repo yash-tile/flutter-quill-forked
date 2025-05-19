@@ -19,6 +19,8 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
     this.centerAlignmentIcon,
     this.rightAlignmentIcon,
     this.rowAlignment = MainAxisAlignment.spaceEvenly,
+    this.itemBottomMargin = 0.0,
+    this.itemTopMargin = 0.0,
     Key? key,
   }) : super(key: key);
 
@@ -53,6 +55,10 @@ class CustomAlignmentButtonGroup extends StatefulWidget {
   final IconData? rightAlignmentIcon;
 
   final MainAxisAlignment rowAlignment;
+
+  final double itemBottomMargin;
+
+  final double itemTopMargin;
 
   @override
   _CustomAlignmentButtonGroupState createState() =>
@@ -138,32 +144,40 @@ class _CustomAlignmentButtonGroupState
             final icon = alignments[index]['icon'] as IconData;
             final isSelected = _value?.value == attribute.value;
 
-            return Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  if (_value?.value == attribute.value) {
-                    // If already selected, unselect (default to left align)
-                    widget.controller.formatSelection(Attribute.leftAlignment);
-                  } else {
-                    widget.controller.formatSelection(attribute);
-                  }
-                  widget.afterButtonPressed?.call();
-                },
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                child: Container(
-                  height: widget.iconSize * kIconButtonFactor,
-                  width: widget.iconSize * kIconButtonFactor,
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? selectedBackgroundColor
-                        : unselectedBackgroundColor,
-                    borderRadius: BorderRadius.circular(widget.borderRadius),
-                  ),
-                  child: Icon(
-                    icon,
-                    size: widget.iconSize,
-                    color: isSelected ? selectedIconColor : unselectedIconColor,
+            return Container(
+              margin: EdgeInsets.only(
+                bottom: widget.itemBottomMargin,
+                top: widget.itemTopMargin,
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    if (_value?.value == attribute.value) {
+                      // If already selected, unselect (default to left align)
+                      widget.controller
+                          .formatSelection(Attribute.leftAlignment);
+                    } else {
+                      widget.controller.formatSelection(attribute);
+                    }
+                    widget.afterButtonPressed?.call();
+                  },
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
+                  child: Container(
+                    height: widget.iconSize * kIconButtonFactor,
+                    width: widget.iconSize * kIconButtonFactor,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? selectedBackgroundColor
+                          : unselectedBackgroundColor,
+                      borderRadius: BorderRadius.circular(widget.borderRadius),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: widget.iconSize,
+                      color:
+                          isSelected ? selectedIconColor : unselectedIconColor,
+                    ),
                   ),
                 ),
               ),

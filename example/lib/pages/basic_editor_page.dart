@@ -367,6 +367,7 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
                                     rightAlignmentIcon:
                                         Icons.format_align_right,
                                     iconSize: toolOptionIconSize,
+                                    rowAlignment: MainAxisAlignment.spaceAround,
                                   ),
                                 ),
                                 VerticalDivider(
