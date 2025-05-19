@@ -131,11 +131,11 @@ class _BasicEditorPageState extends State<BasicEditorPage> {
     );
 
     final fontSizes = {
-      '10': '10',
-      '12': '12',
-      '14': '14',
-      '16': '16',
-      '18': '18',
+      'paragraph': '10',
+      'small': '12',
+      'medium': '14',
+      'large': '16',
+      'xlarge': '18',
     };
     // Calculate approximate line count (simple calculation for demo purposes)
     final text = _controller.document.toPlainText();

@@ -91,6 +91,7 @@ class _QuillFontSizeButtonState extends State<QuillFontSizeButton> {
       constraints: BoxConstraints.tightFor(height: widget.iconSize * 1.81),
       child: RawMaterialButton(
         visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
             borderRadius:
                 BorderRadius.circular(widget.iconTheme?.borderRadius ?? 2)),
@@ -143,23 +144,20 @@ class _QuillFontSizeButtonState extends State<QuillFontSizeButton> {
 
   Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(_currentValue,
-              style: TextStyle(
-                  fontSize: widget.iconSize / 1.15,
-                  color: widget.iconTheme?.iconUnselectedColor ??
-                      theme.iconTheme.color)),
-          const SizedBox(width: 3),
-          Icon(Icons.arrow_drop_down,
-              size: widget.iconSize / 1.15,
-              color: widget.iconTheme?.iconUnselectedColor ??
-                  theme.iconTheme.color)
-        ],
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(_currentValue,
+            style: TextStyle(
+                fontSize: widget.iconSize / 1.15,
+                color: widget.iconTheme?.iconUnselectedColor ??
+                    theme.iconTheme.color)),
+        const SizedBox(width: 3),
+        Icon(Icons.arrow_drop_down,
+            size: widget.iconSize / 1.15,
+            color:
+                widget.iconTheme?.iconUnselectedColor ?? theme.iconTheme.color)
+      ],
     );
   }
 }
