@@ -41,7 +41,7 @@ export 'toolbar/toggle_style_button.dart';
 const double kDefaultIconSize = 18;
 
 // The factor of how much larger the button is in relation to the icon.
-const double kIconButtonFactor = 1.77;
+const double kIconButtonFactor = 2;
 
 class QuillToolbar extends StatelessWidget implements PreferredSizeWidget {
   const QuillToolbar({
